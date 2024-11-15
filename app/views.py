@@ -200,6 +200,7 @@ def register(request):
         last_name = request.POST['last_name']
         email = request.POST['email']
         cpf = request.POST['cpf']
+        genrer = request.POST['genrer']
         password = request.POST['password']
         rpassword = request.POST['rpassword']
 
@@ -208,7 +209,7 @@ def register(request):
 
         if not errors:
             user = User.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=cpf, password=password)
-            profile = Profile.objects.create(user=user, cpf=cpf, usertype="patient")
+            profile = Profile.objects.create(user=user, cpf=cpf, genrer=genrer, usertype="patient")
             Patient.objects.create(profile=profile)
             return redirect('/login')
         
@@ -353,15 +354,15 @@ def add_calendar(request):
         begin_date = user_tz.localize(timezone.datetime.strptime(request.POST['begin_date'], '%Y-%m-%dT%H:%M'))
         end_date = user_tz.localize(timezone.datetime.strptime(request.POST['end_date'], '%Y-%m-%dT%H:%M'))
 
-        # appointments = Calendar.objects.filter(doctor=doctor, begin_date=begin_date, end_date=end_date, status="Agendado")
-        # if appointments.exists(): errors.append('Este horário já está agendado para outro paciente.')
-        # if (end_date - begin_date) != timedelta(minutes=30): errors.append('O agendamento deve ter duração de 30 minutos.')
-        # if begin_date.weekday() >= 5 or end_date.weekday() >= 5: errors.append('Agendamentos só são permitidos de segunda à sexta-feira.')
-        # if not (time(8, 0) <= begin_date.time() <= time(18, 0)): errors.append('A hora inicial deve estar entre 08:00 e 18:00.')
-        # if not (time(8, 0) <= end_date.time() <= time(18, 0)): errors.append('A hora final deve estar entre 08:00 e 18:00.')
-        # if begin_date < timezone.now(): errors.append('A hora inicial deve ser em um momento futuro.')
-        # if end_date < timezone.now(): errors.append('A hora final deve ser em um momento futuro.')
-        # if begin_date >= end_date: errors.append('A hora inicial deve ser antes da hora final.')
+        appointments = Calendar.objects.filter(doctor=doctor, begin_date=begin_date, end_date=end_date, status="Agendado")
+        if appointments.exists(): errors.append('Este horário já está agendado para outro paciente.')
+        if (end_date - begin_date) != timedelta(minutes=30): errors.append('O agendamento deve ter duração de 30 minutos.')
+        if begin_date.weekday() >= 5 or end_date.weekday() >= 5: errors.append('Agendamentos só são permitidos de segunda à sexta-feira.')
+        if not (time(8, 0) <= begin_date.time() <= time(18, 0)): errors.append('A hora inicial deve estar entre 08:00 e 18:00.')
+        if not (time(8, 0) <= end_date.time() <= time(18, 0)): errors.append('A hora final deve estar entre 08:00 e 18:00.')
+        if begin_date < timezone.now(): errors.append('A hora inicial deve ser em um momento futuro.')
+        if end_date < timezone.now(): errors.append('A hora final deve ser em um momento futuro.')
+        if begin_date >= end_date: errors.append('A hora inicial deve ser antes da hora final.')
         
         if errors: return JsonResponse({"form_data": form_data, "errors": errors})
         else:

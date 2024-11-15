@@ -17,42 +17,58 @@
                                             {% csrf_token %}
 
                                             <div class="form-group row">
-                                                <div class="col-sm-6 pr-0">
+                                                <div class="col-sm-6">
+                                                    <label for="first_name" class="small-label">Nome</label>
                                                     <input type="text" class="form-control" id="first_name" name="first_name" 
-                                                    value="{{ form_data.first_name }}" placeholder="Nome" />
+                                                    value="{{ form_data.first_name }}" />
                                                 </div>
                                                 <div class="col-sm-6">
+                                                    <label for="first_name" class="small-label">Sobrenome</label>
                                                     <input type="text" class="form-control" id="last_name" name="last_name" 
-                                                    value="{{ form_data.last_name }}" placeholder="Sobrenome" />
+                                                    value="{{ form_data.last_name }}" />
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
-                                                <div class="col-sm-6 mb-3 mb-sm-0 pr-0">
-                                                    <input type="email" class="form-control" id="email" name="email" 
-                                                    value="{{ form_data.email }}" placeholder="E-mail" />
+                                                <div class="col-sm-6">
+                                                    <label for="genrer" class="small-label">Gênero</label>
+                                                    <select class="form-control" id="genrer" name="genrer" required>
+                                                        <option disabled selected></option>
+                                                        <option value="Masculino" {% if form_data.genrer == "Masculino" %}selected{% endif %}>Masculino</option>
+                                                        <option value="Feminino" {% if form_data.genrer == "Feminino" %}selected{% endif %}>Feminino</option>
+                                                    </select>
                                                 </div>
                                                 <div class="col-sm-6">
+                                                    <label for="cpf" class="small-label">CPF</label>
                                                     <input type="number" class="form-control" id="cpf" name="cpf" 
-                                                    value="{{ form_data.cpf }}" placeholder="CPF" />
+                                                    value="{{ form_data.cpf }}" />
                                                 </div>
+                                            </div>
+
+
+                                            <div class="form-group row">
+                                                <div class="col-sm-12 mb-3 mb-sm-0">
+                                                    <label for="email" class="small-label">E-mail</label>
+                                                    <input type="email" class="form-control" id="email" name="email" 
+                                                    value="{{ form_data.email }}" />
+                                                </div>
+
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-sm-6 mb-3 mb-sm-0 pr-0">
-                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Senha" />
+                                                    <label for="password" class="small-label">Senha</label>
+                                                    <input type="password" class="form-control" id="password" name="password" />
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <input type="password" class="form-control" id="rpassword" name="rpassword" placeholder="Repetir Senha" />
+                                                    <label for="rpassword" class="small-label">Repetir Senha</label>
+                                                    <input type="password" class="form-control" id="rpassword" name="rpassword" />
                                                 </div>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
                                         </form>
                                         <hr>
-                                        <div class="text-center">
-                                            <a class="small" href="{% url 'forgot_password' %}">Esqueceu sua senha?</a>
-                                        </div>
                                         <div class="text-center">
                                             <a class="small" href="{% url 'login' %}">Já tem uma conta? Entre!</a>
                                         </div>
