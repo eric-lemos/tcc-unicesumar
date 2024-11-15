@@ -1,0 +1,12 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Histórico {% endblock %}
+{% block content %}
+
+    <div class="text-center">
+        <div class="error mx-auto" data-text="404">404</div>
+        <p class="lead text-gray-800 mb-5">Página não encontrada</p>
+        <p class="text-gray-500 mb-0">A página que você procura não existe ou foi removida</p>
+        <a style="text-decoration:none !important" href="{% url 'dashboard' %}">&larr; Voltar para Dashboard</a>
+    </div>
+
+{% endblock %}

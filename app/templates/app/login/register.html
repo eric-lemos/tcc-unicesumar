@@ -1,0 +1,84 @@
+{% extends 'app/login/base.html' %}
+    {% block title %} Cadastre-se {% endblock %}
+    {% block content %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="card o-hidden border-0 shadow-lg mt-5 mb-3">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-4">Crie uma conta!</h1>
+                                        </div>
+
+                                        <form class="user" method="POST" action="{% url 'register' %}">
+                                            {% csrf_token %}
+
+                                            <div class="form-group row">
+                                                <div class="col-sm-6 pr-0">
+                                                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                                                    value="{{ form_data.first_name }}" placeholder="Nome" />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                                                    value="{{ form_data.last_name }}" placeholder="Sobrenome" />
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-sm-6 mb-3 mb-sm-0 pr-0">
+                                                    <input type="email" class="form-control" id="email" name="email" 
+                                                    value="{{ form_data.email }}" placeholder="E-mail" />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input type="number" class="form-control" id="cpf" name="cpf" 
+                                                    value="{{ form_data.cpf }}" placeholder="CPF" />
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-sm-6 mb-3 mb-sm-0 pr-0">
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Senha" />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input type="password" class="form-control" id="rpassword" name="rpassword" placeholder="Repetir Senha" />
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
+                                        </form>
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="small" href="{% url 'forgot_password' %}">Esqueceu sua senha?</a>
+                                        </div>
+                                        <div class="text-center">
+                                            <a class="small" href="{% url 'login' %}">Já tem uma conta? Entre!</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if errors %}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 alert-align">
+                            <div class="alert alert-danger" role="alert">
+                                <ul>
+                                    {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    {% endblock %}

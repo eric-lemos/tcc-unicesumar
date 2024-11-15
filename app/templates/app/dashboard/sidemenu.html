@@ -1,0 +1,73 @@
+{% load helpers %}
+{% url 'dashboard' as dashboard %}
+{% url 'calendar' as calendar %}
+{% url 'managers' as managers %}
+{% url 'doctors' as doctors %}
+{% url 'patients' as patients %}
+{% url 'history' as history %}
+{% url 'messages' as messages %}
+{% url 'alerts' as alerts %}
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' %}">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-book-medical"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">iClinic</div>
+    </a><hr class="sidebar-divider" style="margin-top:0" />
+
+    <div class="sidebar-heading">
+        {% if user.profile.manager %} Gestor
+        {% elif user.profile.doctor %} Médico
+        {% elif user.profile.patient %} Paciente
+        {% endif %}
+    </div>
+
+    <li class="nav-item {% is_active request dashboard %}">
+        <a class="nav-link" href="{% url 'dashboard' %}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Painel</span></a>
+    </li>
+
+    <li class="nav-item {% is_active request calendar %}">
+        <a class="nav-link" href="{% url 'calendar' %}">
+            <i class="far fa-calendar-alt"></i>
+            <span>Agenda</span></a>
+    </li>
+
+    {% if user.profile.manager and user.profile.pk == 1 %}
+        <li class="nav-item {% is_active request managers %}">
+            <a class="nav-link" href="{% url 'managers' %}">
+                <i class="fas fa-users-cog"></i>
+                <span>Gestores</span></a>
+        </li>
+    {% endif %}
+    
+    {% if user.profile.manager %}
+    <li class="nav-item {% is_active request doctors %}">
+        <a class="nav-link" href="{% url 'doctors' %}">
+            <i class="fas fa-user-friends"></i>
+            <span>Médicos</span></a>
+    </li>
+    {% endif %}
+
+    {% if user.profile.manager %}
+    <li class="nav-item {% is_active request patients %}">
+        <a class="nav-link" href="{% url 'patients' %}">
+            <i class="fas fa-user-plus"></i>
+            <span>Pacientes</span></a>
+    </li>
+    {% endif %}
+
+    <li class="nav-item {% is_active request history %}">
+        <a class="nav-link" href="{% url 'history' %}">
+            <i class="fas fa-history"></i>
+            <span>Histórico</span></a>
+    </li> <hr class="sidebar-divider" />
+
+    <!-- <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div> -->
+
+</ul>

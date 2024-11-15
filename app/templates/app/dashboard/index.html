@@ -1,0 +1,158 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Dashboard {% endblock %}
+{% block content %}
+    <script>
+        var barChart = JSON.parse('{{ barChart|escapejs }}');
+    </script>
+    
+    <h1 class="h3 text-gray-800"><i class="fas fa-fw fa-tachometer-alt"></i> Dashboard</h1>
+    <p class="mb-4">Visualize rapidamente os principais indicadores e métricas.</p>
+
+
+    <div class="row">
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-dark shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total de Agendamentos</div>
+                            <div id="totalAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ totalAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Agendamentos Concluídos</div>
+                            <div id="doneAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ doneAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Agendamentos Confirmados</div>
+                            <div id="confirmedAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ confirmedAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto"><i class="fas fa-calendar-alt fa-2x text-gray-300"></i></div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Agendamentos Pendentes</div>
+                            <div id="pendingAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ pendingAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Agendamentos Ausentes</div>
+                            <div id="awayAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ awayAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-minus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-12 col-md-2 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Agendamentos Cancelados</div>
+                            <div id="canceledAppointments" class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ canceledAppointments }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-times fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Gráfico dos Agendamentos por Mês</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold">Gráfico dos Agendamentos por Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2"><i class="fas fa-circle text-success"></i> Concluído</span>
+                        <span class="mr-2"><i class="fas fa-circle text-primary"></i> Agendado</span>
+                        <span class="mr-2"><i class="fas fa-circle text-info"></i> Pendente</span>
+                        <span class="mr-2"><i class="fas fa-circle text-warning"></i> Ausente</span>
+                        <span class="mr-2"><i class="fas fa-circle text-danger"></i> Cancelado</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Histórico {% endblock %}
+{% block content %}
+        
+    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-history"></i> Histórico</h1>
+    <p class="mb-4">Acompanhe todas as consultas médicas anteriores em um único lugar.</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="history" width="100%" cellspacing="0">
+                    <thead class="bg-dark text-gray-100">
+                        <tr>
+                            <th>ID</th>
+                            <th>Protocolo</th>
+                            <th>Médico</th>
+                            <th>Paciente</th>
+                            <th>Data Inicial</th>
+                            <th>Data Final</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>{{ appointment.pk }}</td>
+                            <td>{{ appointment.protocol }}</td>
+                            <td>{{ appointment.doctor }}</td>
+                            <td>{{ appointment.patient }}</td>
+                            <td>{{ appointment.begin_date|date:"d/m/Y à\s H:i" }}</td>
+                            <td>{{ appointment.end_date|date:"d/m/Y à\s H:i" }}</td>
+                            <td>{{ appointment.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

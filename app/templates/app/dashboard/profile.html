@@ -1,0 +1,89 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Perfil {% endblock %}
+{% block content %} {% load static %}
+
+{% if user.is_authenticated %}
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center p-1">
+                    <div class="card-img-container">
+                        {% if user.profile.genrer == "Feminino" %}
+                            <img src="{% static 'app/img/profile/3.svg' %}" class="card-img-top profile-img" alt="Foto de Perfil" />
+                        {% else %}
+                            <img src="{% static 'app/img/profile/1.svg' %}" class="card-img-top profile-img" alt="Foto de Perfil" />
+                        {% endif %}
+                    </div>
+                    <div class="card-body" style="padding-top:0">
+                        <h6 class="card-title">{{ user.first_name }} {{ user.last_name }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card border-left-primary">
+                    <div class="card-body p-5">
+                        <h4 class="card-title mb-4">Detalhes</h4>
+
+                        <form>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text" id="first_name">Nome</span></div>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" 
+                                        value="{{ context.first_name }}" readonly/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text" id="last_name">Sobrenome</span></div>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" 
+                                        value="{{ context.last_name }}" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text" id="email">E-mail</span></div>
+                                        <input type="text" class="form-control" id="email" name="email" 
+                                        value="{{ context.email }}" readonly/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text" id="last_name">CPF</span></div>
+                                        <input type="text" class="form-control" id="cpf" name="cpf" 
+                                        value="{{ context.cpf }}" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if user.profile.doctor %}
+                                <div class="form-group row">
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="specialization">Especialidade</span></div>
+                                            <input type="text" class="form-control" id="specialization" name="specialization" 
+                                            value="{{ context.specialization }}" readonly/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend"><span class="input-group-text" id="crm">CRM</span></div>
+                                            <input type="text" class="form-control" id="crm" name="crm" 
+                                            value="{{ context.crm }}/{{ context.crm_state }}" readonly/>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+{% endblock %}

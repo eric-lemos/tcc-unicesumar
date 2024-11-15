@@ -1,0 +1,36 @@
+{% extends 'app/login/base.html' %}
+    {% block title %} Recuperar senha {% endblock %}
+    {% block content %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-6 col-md-6">
+                    <div class="card o-hidden border-0 shadow-lg mt-5 mb-3">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <h1 class="h4 text-gray-900 mb-2">Esqueceu sua senha?</h1>
+                                            <p class="mb-4">Ops, parece que você esqueceu a senha. Mas não precisa se preocupar! Nos informe seu e-mail e enviaremos as instruções necessárias para redefini-la.</p>
+                                        </div>
+                                        <form class="user">
+                                            <div class="form-group">
+                                                <input type="email" class="form-control" id="exampleInputEmail" placeholder="Digite seu e-mail">
+                                            </div>
+                                            <a href="#" class="btn btn-primary btn-block">Recuperar Senha</a>
+                                        </form> <hr />
+                                        <div class="text-center">
+                                            <a class="small" href="{% url 'register' %}">Crie uma conta!</a>
+                                        </div>
+                                        <div class="text-center">
+                                            <a class="small" href="{% url 'login' %}">Já tem uma conta? Entre!</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}

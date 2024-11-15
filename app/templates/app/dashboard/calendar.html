@@ -1,0 +1,285 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Gestores {% endblock %}
+{% block content %} {% load helpers %}
+
+    <h1 class="h3 mb-2 text-gray-800"><i class="far fa-calendar-alt"></i> Agenda</h1>
+    <p class="mb-4">
+        Planeje e gerencie consultas médicas de maneira fácil e eficiente. <br />
+        Crie seu agendamento, aguarde aprovação de um mediador e seja atendido!
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            {% if user.profile.manager or user.profile.patient %}
+                <div class="row d-flex justify-content-end mr-2">
+                    <a class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#addAppointment">
+                        <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
+                        <span class="text">Novo</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="calendar" width="100%" cellspacing="0">
+                    <thead class="bg-dark text-gray-100">
+                        <tr>
+                            <th>ID</th>
+                            <th>Protocolo</th>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th>Especialidade</th>
+                            <th>Data Inicial</th>
+                            <th>Data Final</th>
+                            <th>Situação</th>
+                            {% if user.profile.manager or user.profile.doctor %} <th>Aprovador</th> {% endif %}
+                            {% if user.profile.manager or user.profile.patient %} <th>Ações</th> {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.pk }}</td>
+                                <td>{{ appointment.protocol }}</td>
+                                <td>{{ appointment.patient }}</td>
+                                <td>{{ appointment.doctor }}</td>
+                                <td>{{ appointment.specialization }}</td>
+                                <td>{{ appointment.begin_date|date:"d/m/Y à\s H:i" }}</td>
+                                <td>{{ appointment.end_date|date:"d/m/Y à\s H:i" }}</td>
+                                <td>{{ appointment.status }}</td>
+                                {% if user.profile.manager or user.profile.doctor %}
+                                    <td>
+                                        {% if appointment.moderator != None %}
+                                            {{ appointment.moderator }}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                {% if user.profile.manager or user.profile.patient %}
+                                    <td>
+                                        {% if user.profile.manager %}
+                                            <a class="btn btn-primary btn-icon-split btn-sm edit-appointment" data-toggle="modal" 
+                                            data-pk="{{ appointment.pk }}" data-target="#editAppointment">
+                                                <span class="icon text-white-50"><i class="fas fa-edit"></i></span>
+                                            </a>
+                                        {% elif user.profile.patient and appointment.status == "Pendente" %}
+                                            <a class="btn btn-primary btn-icon-split btn-sm edit-appointment" data-toggle="modal" 
+                                            data-pk="{{ appointment.pk }}" data-target="#editAppointment">
+                                                <span class="icon text-white-50"><i class="fas fa-edit"></i></span>
+                                            </a>
+                                        {% endif %}
+
+                                        {% if appointment.status == "Pendente" %}
+                                            {% if user.profile.manager %}
+                                                <form method="post" action="{% url 'approve_calendar' appointment.pk %}" style="display:inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" id="moderator" name="moderator" value="{{ user.profile.pk }}">
+                                                    <button type="submit" class="btn btn-success btn-icon-split btn-sm" data-pk="{{ appointment.pk }}">
+                                                        <span class="icon text-white-50"><i class="fas fa-thumbs-up"></i></span>
+                                                        <span class="text">Aprovar</span>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if appointment.status == "Agendado" or appointment.status == "Pendente" %}
+                                            {% if user.profile.manager or user.profile.patient %}
+                                                <form method="post" action="{% url 'cancel_calendar' appointment.pk %}" style="display:inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-icon-split btn-sm" data-pk="{{ appointment.pk }}">
+                                                        <span class="icon text-white-50"><i class="fas fa-ban"></i></span>
+                                                        <span class="text">Cancelar</span>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if appointment.status == "Agendado" %}
+                                            {% if user.profile.manager %}
+                                                <form method="post" action="{% url 'away_calendar' appointment.pk %}" style="display:inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-secondary btn-icon-split btn-sm" data-pk="{{ appointment.pk }}">
+                                                        <span class="icon text-white-50"><i class="fas fa-sign-out-alt"></i></span>
+                                                        <span class="text">Ausente</span>
+                                                    </button>
+                                                </form>
+
+                                                <form method="post" action="{% url 'done_calendar' appointment.pk %}" style="display:inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-info btn-icon-split btn-sm" data-pk="{{ appointment.pk }}">
+                                                        <span class="icon text-white-50"><i class="fas fa-check"></i></span>
+                                                        <span class="text">Finalizar</span>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Appointment Modal -->
+    <div class="modal fade" id="addAppointment" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agendar nova consulta</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <form id="add_appointment" class="user">
+                    <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <label for="patient_select" class="small-label">Paciente</label>
+                                    <select class="form-control" id="patient_select" name="patient_select" required>
+                                        <option disabled selected>Selecione uma opção</option>
+                                        {% for patient in patients %}
+                                            <option value="{{ patient.pk }}" {% if user.pk == patient.pk %}selected{% endif %}>
+                                                {{ patient.profile.user.first_name }} {{ patient.profile.user.last_name }} (CPF: {{ patient.profile.cpf }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="specialization_select" class="small-label">Especialidade</label>
+                                    <select class="form-control" id="specialization_select" name="specialization_select" required>
+                                        <option disabled selected>Selecione uma opção</option>
+                                        {% for specialization in specializations %}
+                                            <option value="{{ specialization.specialization }}">
+                                                {{ specialization.specialization }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="doctor_select" class="small-label">Médico</label>
+                                    <select class="form-control" id="doctor_select" name="doctor_select" disabled required>
+                                        <option value="" disabled selected>Selecione uma opção</option>
+                                        {% for doctor in doctors %}
+                                            <option value="{{ doctor.pk }}" data-specialization="{{ doctor.specialization }}">
+                                                {{ doctor.profile.user.first_name }} {{ doctor.profile.user.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="begin_date" class="small-label">Data/Hora Inicial</label>
+                                    <input class="form-control" type="datetime-local" class="form-control" id="begin_date" name="begin_date" />
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="end_date" class="small-label">Data/Hora Final</label>
+                                    <input class="form-control" type="datetime-local" class="form-control" id="end_date" name="end_date" />
+                                </div>
+                            </div>
+                    </div>
+
+                    <div id="addModalAlerts"></div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Cadastrar</a>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Appointment Modal -->
+    <div class="modal fade" id="editAppointment" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editando consulta</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <form id="edit_appointment" class="user">
+                    <div class="modal-body">
+                            {% csrf_token %}
+                            <input type="hidden" id="appointment_id_edit" name="appointment_id_edit" value="" />
+
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <label for="patient_select_edit" class="small-label">Paciente</label>
+                                    <select class="form-control" id="patient_select_edit" name="patient_select_edit" required>
+                                        <option disabled selected>Selecione uma opção</option>
+                                        {% for patient in patients %}
+                                            <option value="{{ patient.pk }}" {% if user.pk == patient.pk %}selected{% endif %}>
+                                                {{ patient.profile.user.first_name }} {{ patient.profile.user.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="specialization_select_edit" class="small-label">Especialidade</label>
+                                    <select class="form-control" id="specialization_select_edit" name="specialization_select_edit" required>
+                                        <option disabled selected>Selecione uma opção</option>
+                                        {% for specialization in specializations %}
+                                            <option value="{{ specialization.specialization }}">
+                                                {{ specialization.specialization }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="doctor_select_edit" class="small-label">Médico</label>
+                                    <select class="form-control" id="doctor_select_edit" name="doctor_select_edit" disabled required>
+                                        <option value="" disabled selected>Selecione uma opção</option>
+                                        {% for doctor in doctors %}
+                                            <option value="{{ doctor.pk }}" data-specialization="{{ doctor.specialization }}">
+                                                {{ doctor.profile.user.first_name }} {{ doctor.profile.user.last_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="begin_date_edit" class="small-label">Data/Hora Inicial</label>
+                                    <input class="form-control" type="datetime-local" class="form-control" id="begin_date_edit" name="begin_date_edit" />
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="end_date_edit" class="small-label">Data/Hora Final</label>
+                                    <input class="form-control" type="datetime-local" class="form-control" id="end_date_edit" name="end_date_edit" />
+                                </div>
+                            </div>
+                    </div>
+                    
+                    <div id="editModalAlerts">
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Atualizar</a>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

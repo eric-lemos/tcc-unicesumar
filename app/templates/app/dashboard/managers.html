@@ -1,0 +1,210 @@
+{% extends 'app/dashboard/base.html' %}
+{% block title %} Mediadores {% endblock %}
+{% block content %}
+
+    <h1 class="h3 mb-2 text-gray-800"><i class="fas fa-users-cog"></i> Gestores</h1>
+    <p class="mb-4">Centralize todos os gestores do sistema em um único lugar.</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row d-flex justify-content-end mr-2">
+                <a class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#addManager">
+                    <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
+                    <span class="text">Novo</span>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="bg-dark text-gray-100">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>CPF</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for manager in managers %}
+                        {% if manager.profile.pk != 1 %}
+                        <tr>
+                            <td>{{ manager.pk }}</td>
+                            <td>{{ manager }}</td>
+                            <td>{{ manager.profile.user.email }}</td>
+                            <td>{{ manager.profile.cpf }}</td>
+                            <td>
+                                <a class="btn btn-primary btn-icon-split btn-sm edit-manager" data-toggle="modal" 
+                                data-pk="{{ manager.pk }}" data-target="#editManager">
+                                    <span class="icon text-white-50"><i class="fas fa-edit"></i></span>
+                                    <span class="text">Editar</span>
+                                </a>
+                                <a class="btn btn-danger btn-icon-split btn-sm del-manager" data-toggle="modal" 
+                                data-pk="{{ manager.pk }}"data-target="#delManager">
+                                    <span class="icon text-white-50"><i class="fas fa-trash"></i></span>
+                                    <span class="text">Remover</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Manager Modal -->
+    <div class="modal fade" id="addManager" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastro de gestor</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <form id="add_manager" class="user">
+                    <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="first_name" class="small-label">Nome</label>
+                                    <input type="text" class="form-control" maxlength="25" id="first_name" name="first_name"  
+                                    value="{{ form_data.first_name }}" required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="last_name" class="small-label">Sobrenome</label>
+                                    <input type="text" class="form-control" maxlength="25" id="last_name" name="last_name"  
+                                    value="{{ form_data.last_name }}" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="cpf" class="small-label">CPF</label>
+                                    <input type="number" class="form-control" maxlength="11" id="cpf" name="cpf" 
+                                    value="{{ form_data.cpf }}" required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="cpf" class="small-label">Gênero</label>
+                                    <select class="form-control" id="genrer" name="genrer" required>
+                                        <option disabled selected></option>
+                                        <option value="Masculino" {% if form_data.genrer == "Masculino" %}selected{% endif %}>Masculino</option>
+                                        <option value="Feminino" {% if form_data.genrer == "Feminino" %}selected{% endif %}>Feminino</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="small-label">E-mail</label>
+                                <input type="email" class="form-control" maxlength="50" id="email" name="email" 
+                                value="{{ form_data.email }}" required />
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="password" class="small-label">Senha</label>
+                                    <input type="password" class="form-control" maxlength="16" id="password" name="password"  required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="rpassword" class="small-label">Repetir Senha</label>
+                                    <input type="password" class="form-control" maxlength="16" id="rpassword" name="rpassword" required />
+                                </div>
+                            </div>
+                    </div>
+
+                    <div id="addModalAlerts">
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Cadastrar</a>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Manager Modal -->
+    <div class="modal fade" id="editManager" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editando gestor</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <form id="edit_manager" class="user">
+                    <div class="modal-body">
+                            {% csrf_token %}
+                            <input type="hidden" id="manager_id" name="manager_id" value="{{ manager.pk }}" />
+
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="first_name" class="small-label">Nome</label>
+                                    <input type="text" class="form-control" maxlength="25" name="first_name" id="first_name" 
+                                    value="{{ form_data.first_name }}" required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="last_name" class="small-label">Sobrenome</label>
+                                    <input type="text" class="form-control" maxlength="25" name="last_name" id="last_name" 
+                                    value="{{ form_data.last_name }}" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="cpf" class="small-label">CPF</label>
+                                    <input type="number" class="form-control" maxlength="11" id="cpf" name="cpf" 
+                                    value="{{ form_data.cpf }}" required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="cpf" class="small-label">Gênero</label>
+                                    <select class="form-control" id="genrer" name="genrer" required>
+                                        <option disabled selected></option>
+                                        <option value="Masculino" {% if form_data.genrer == "Masculino" %}selected{% endif %}>Masculino</option>
+                                        <option value="Feminino" {% if form_data.genrer == "Feminino" %}selected{% endif %}>Feminino</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="small-label">E-mail</label>
+                                <input type="email" class="form-control" maxlength="50" name="email" id="email" 
+                                value="{{ form_data.email }}" required />
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-6 pr-0">
+                                    <label for="password" class="small-label">Senha</label>
+                                    <input type="password" class="form-control" maxlength="16" id="password" name="password" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="rpassword" class="small-label">Repetir Senha</label>
+                                    <input type="password" class="form-control" maxlength="16" id="rpassword" name="rpassword" />
+                                </div>
+                            </div>
+                    </div>
+                    
+                    <div id="editModalAlerts">
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Atualizar</a>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
