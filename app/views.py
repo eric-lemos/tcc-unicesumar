@@ -179,8 +179,8 @@ def login(request):
     
     else:
         if not Profile.objects.filter(cpf='1').exists():
-            user = User.objects.create_user(first_name='Super', last_name='Admin', email='admin@website.com', username='1', password='1')
-            profile = Profile.objects.create(pk=user.pk, user=user, cpf='1', genrer='')
+            user = User.objects.create_user(first_name='Super', last_name='Admin', email='admin@website.com', username='admin', password='1')
+            profile = Profile.objects.create(pk=user.pk, user=user, cpf='1', genrer='Masculino', usertype="manager")
             Manager.objects.create(pk=user.pk, profile=profile)
             create_fake_data()
 
@@ -209,8 +209,8 @@ def register(request):
 
         if not errors:
             user = User.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=cpf, password=password)
-            profile = Profile.objects.create(user=user, cpf=cpf, genrer=genrer, usertype="patient")
-            Patient.objects.create(profile=profile)
+            profile = Profile.objects.create(pk=user.pk, user=user, cpf=cpf, genrer=genrer, usertype="patient")
+            Patient.objects.create(pk=user.pk, profile=profile)
             return redirect('/login')
         
     return render(request, 'app/login/register.html', {'form_data': form_data, 'errors': errors})
