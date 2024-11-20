@@ -246,7 +246,7 @@ def profile(request):
 # Dashboard
 @login_required(login_url='/login/')
 def dashboard(request):
-    locale.setlocale(locale.LC_TIME, 'pt_BR.utf8')
+    locale.setlocale(locale.LC_TIME, 'pt_BR')
     
     if request.user.profile.usertype == 'doctor':
         doctor = get_object_or_404(Doctor, pk=request.user.pk)
