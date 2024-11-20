@@ -49,16 +49,52 @@ $(document).ready(function() {
                             )
                         });
                         $('#addModalAlerts').append(newline)
-
+    
                     } else {
                         window.location.reload()
                     }
-
+    
                 },
-                error: function(xhr, status, error) {console.log(error)}
+                error: function(xhr, status, error) { console.log(error) }
             });
         });
     }
+    
+    // function postItem(reference, endpoint) {
+    //     $(reference).on('submit', function(event) {
+    //         $('#addModalAlerts').html('');
+    //         event.preventDefault();
+            
+    //         print($(this))
+
+    //         $.ajax({
+    //             url: endpoint,
+    //             method: "POST",
+    //             data: $(this).serialize(),
+    //             headers: {
+    //                 'X-CSRFToken': '{{ csrf_token }}',
+    //             },
+    //             success: function(response) {
+    //                 if (response.errors) {
+    //                     const newline = alert_errors.clone()
+    //                     response.errors.forEach(error => {
+    //                         newline.find('#alert-message').append(
+    //                             `<li>${error}</li>`
+    //                         )
+    //                     });
+    //                     $('#addModalAlerts').append(newline)
+
+    //                 } else {
+    //                     window.location.reload()
+    //                 }
+
+    //             },
+    //             error: function(xhr, status, error) {
+    //                 console.log(error)
+    //             }
+    //         });
+    //     });
+    // }
 
     /* EDIT AJAX FUNCTION */
     function editItem(reference, endpoint, pk_reference) {

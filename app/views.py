@@ -316,23 +316,21 @@ def gen_protocol():
 @login_required(login_url='/login/')
 
 def calendar(request):
+    specializations = Doctor.objects.values('specialization').distinct()
+    patients = Patient.objects.all()
+    doctors = Doctor.objects.all()
+
     if request.user.profile.usertype == 'doctor':
         doctor = get_object_or_404(Doctor, pk=request.user.pk)
         appointments = Calendar.objects.all().filter(status__in=['Agendado', 'Pendente'], doctor=doctor)
-        patients, doctors = None, None
 
     elif request.user.profile.usertype == 'patient':
         patient = get_object_or_404(Patient, pk=request.user.pk)
         appointments = Calendar.objects.all().filter(status__in=['Agendado', 'Pendente'], patient=patient)
-        doctors = Doctor.objects.all()
-        patients = None
-
+        patients = Patient.objects.all().filter(pk=request.user.pk)
+        
     else:
         appointments = Calendar.objects.all().filter(status__in=['Agendado', 'Pendente'])
-        patients = Patient.objects.all()
-        doctors = Doctor.objects.all()
-
-    specializations = Doctor.objects.values('specialization').distinct()
 
     return render(request, 'app/dashboard/calendar.html', {
         'appointments': appointments,
